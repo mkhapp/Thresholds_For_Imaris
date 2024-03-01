@@ -26,7 +26,7 @@
 // If you want to change the threshold method, change the word "Otsu" in line 150.
 
 // Code starts here.
-
+setBatchMode(true);
 
 //Let user determine threshold levels for each channel
 red = 0;
@@ -93,8 +93,10 @@ for (k = 0; k < channels.length; k++) {
 
 //Open image
 run("Bio-Formats Windowless Importer", "open=[fullpath]");
+imagename = "Image.czi";
+rename(imagename);
 run("Split Channels");
-selectWindow(channelsets[k]+image);
+selectWindow(channelsets[k]+imagename);
 close("\\Others");
 
 //Set desired threshold value
