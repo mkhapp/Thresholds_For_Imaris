@@ -43,7 +43,7 @@ blue = Dialog.getNumber();
 green = Dialog.getNumber();
 path = Dialog.getString();
 
-//run processing function on every czi in the directory, save results in one .csv
+//run processing function on every czi or tif in the directory, save results in one .csv
 files = getFileList(path);
 tabletitle = "Total Results";
 Table.create(tabletitle);
@@ -56,7 +56,7 @@ Table.set("Value Subtracted From Green", 0, "N/A", tabletitle);
 Table.set("Green Otsu Threshold", 0, "Top "+green+"% of pixels");
 row = 1;
 for (i=0; i<files.length; i++) {
-	if (endsWith(files[i], ".czi")) {
+	if (endsWith(files[i], ".czi") || endsWith(files[i], ".tif")) {
 		imagenoext = File.getNameWithoutExtension(path+files[i]);
 		result = Processor(path+files[i], path, files[i], imagenoext, red, blue, green);
 		Table.set("Image Name", row, imagenoext, tabletitle);
@@ -93,7 +93,7 @@ for (k = 0; k < channels.length; k++) {
 
 //Open image
 run("Bio-Formats Windowless Importer", "open=[fullpath]");
-imagename = "Image.czi";
+imagename = "Image.tif";
 rename(imagename);
 run("Split Channels");
 selectWindow(channelsets[k]+imagename);
