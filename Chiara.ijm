@@ -14,7 +14,7 @@
 // 1) Images should be three channel, in .czi format, and stored in the same folder.
 // 2) Each channel should be 16 bit. If other bit depths are to be used, the code must be modified.
 // 3) The order of channels must be Red (channel 1), Blue (channel 2), Green (channel 3).
-// 3) Images should contain only one parasite. Images with multiple parasites should be cropped.
+// 4) Images should contain only one parasite. Images with multiple parasites should be cropped.
 
 // This macro has two outputs - first, a series of tif files with the calculated background level
 // subtracted from each channel; and second, a CSV file called "Results" with the subtracted
@@ -30,9 +30,9 @@ setBatchMode(true);
 
 //Let user determine threshold levels for each channel
 Dialog.create("Set Interesting Pixel Level in Percent Form (ex, for top 1%, enter '1') AND directory of images.");
-Dialog.addNumber("Red Threshold Level:", red);
-Dialog.addNumber("Blue Threshold Level:", blue);
-Dialog.addNumber("Green Threshold Level:", green);
+Dialog.addNumber("Red Threshold Level:", 0.1);
+Dialog.addNumber("Blue Threshold Level:", 0.1);
+Dialog.addNumber("Green Threshold Level:", 0.1);
 Dialog.addDirectory("Directory:", File.getDefaultDir);
 Dialog.show();
 red = Dialog.getNumber();
@@ -82,13 +82,19 @@ print("Finished!");
 function Processor(fullpath, path, image, imagenoext, red, blue, green) {
 // Subtracts background from images and determines Otsu threshold
 
-channels = newArray("red", "blue", "green");
-channelsets = newArray("C1-", "C2-", "C3-");
-channelthresh = newArray(red, blue, green);
-result = newArray(0);
-for (k = 0; k < channels.length; k++) {
-
 //Open image
+run("Bio-Formats Windowless Importer", "open=[fullpath]");
+imagename = "Image.tif";
+rename(imagename);
+
+//set up channel and threshold arrays based on color order
+channels = ColorOrder(imagename);
+channelsets = newArray("C1-", "C2-", "C3-");
+channelthresh = ThresholdOrder(channels);
+result = newArray(0);
+close("*");
+
+for (k = 0; k < channels.length; k++) {
 run("Bio-Formats Windowless Importer", "open=[fullpath]");
 imagename = "Image.tif";
 rename(imagename);
@@ -166,4 +172,74 @@ saveAs("Tiff", path+imagenoext+"_merged.tif");
 
 return result;
 
+}
+
+
+function ColorOrder(imagename) { 
+// determines the color order of three-channel (RGB) images; output is an array [ex. newArray("red", "blue", "green")]
+	selectWindow(imagename);
+	getDimensions(width, height, channels, slices, frames);
+	if (channels != 3) {
+		exit(imagename + " is not a 3 channel image.");
+	}
+	
+	channels = newArray(0);
+	
+	//get RGB Lut arrays for each channel
+	for (ii = 1; ii <= 3; ii++) {
+
+		Stack.setChannel(ii);
+		getLut(reds, greens, blues);
+		Array.getStatistics(reds, min, max, mean, stdDev);
+		redsmax = max;
+		Array.getStatistics(greens, min, max, mean, stdDev);
+		greensmax = max;
+		Array.getStatistics(blues, min, max, mean, stdDev);
+		bluesmax = max;
+		colorpicker = newArray(redsmax, greensmax, bluesmax);
+		Array.getStatistics(colorpicker, min, max, mean, stdDev);
+		if (max == colorpicker[0]) {
+			channels[ii-1] = "red";
+		}
+		if (max == colorpicker[1]) {
+			channels[ii-1] = "green";
+		}
+		if (max == colorpicker[2]) {
+			channels[ii-1] = "blue";
+		}
+	
+	}
+	
+	return channels;
+	
+}
+
+
+function ThresholdOrder(channels) {
+// sets the threshold order based on the channel order
+	if (channels[0] == "red") {
+		if (channels[1] == "green") {
+			channelthresh = newArray(red, green, blue);
+		} else {
+			channelthresh = newArray(red, blue, green);
+		}
+	}
+	
+	if (channels[0] == "green") {
+		if (channels[1] == "red") {
+			channelthresh = newArray(green, red, blue);
+		} else {
+			channelthresh = newArray(green, blue, red);
+		}
+	}
+	
+	if (channels[0] == "blue") {
+		if (channels[1] == "red") {
+			channelthresh = newArray(blue, red, green);
+		} else {
+			channelthresh = newArray(blue, green, red);
+		}
+	}
+	
+	return channelthresh;
 }
