@@ -160,6 +160,13 @@ close("*");
 
 }
 
+//make combined channel images
+open(path+imagenoext+"_blue_background_subtracted.tif");
+open(path+imagenoext+"_green_background_subtracted.tif");
+open(path+imagenoext+"_red_background_subtracted.tif");
+run("Merge Channels...", "c1=["+imagenoext+"_red_background_subtracted.tif] c2=["+imagenoext+"_green_background_subtracted.tif] c3=["+imagenoext+"_blue_background_subtracted.tif] create ignore");
+saveAs("Tiff", path+imagenoext+"_merged.tif");
+
 return result;
 
 }
