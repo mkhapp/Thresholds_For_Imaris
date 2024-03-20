@@ -29,9 +29,6 @@
 setBatchMode(true);
 
 //Let user determine threshold levels for each channel
-red = 0;
-blue = 0;
-green = 0;
 Dialog.create("Set Interesting Pixel Level in Percent Form (ex, for top 1%, enter '1') AND directory of images.");
 Dialog.addNumber("Red Threshold Level:", red);
 Dialog.addNumber("Blue Threshold Level:", blue);
