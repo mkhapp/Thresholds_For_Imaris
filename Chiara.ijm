@@ -11,10 +11,12 @@
 // 0.1 - 1%, but should be thoroughly tested by the end user.
 
 // For the macro to function correctly, the following must be true:
-// 1) Images should be three channel, in .czi format, and stored in the same folder.
+// 1) Images should be three channel (red, green, and blue only), in .czi format, and stored in the same folder.
 // 2) Each channel should be 16 bit. If other bit depths are to be used, the code must be modified.
-// 3) The order of channels must be Red (channel 1), Blue (channel 2), Green (channel 3).
-// 4) Images should contain only one parasite. Images with multiple parasites should be cropped.
+// 3) The order of channels should not matter in later versions of this code.  Check the final image to ensure that
+//     no channels are switched.
+// 4) Images should contain only one parasite. Images with multiple parasites should be cropped, or else the
+//     threshold values will be incorrect.
 
 // This macro has two outputs - first, a series of tif files with the calculated background level
 // subtracted from each channel; and second, a CSV file called "Results" with the subtracted
