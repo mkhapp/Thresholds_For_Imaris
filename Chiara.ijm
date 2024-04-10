@@ -47,24 +47,24 @@ files = getFileList(path);
 tabletitle = "Total Results";
 Table.create(tabletitle);
 Table.set("Image Name", 0, "Chosen Threshold Levels");
-Table.set("Value Subtracted From Red", 0, "N/A", tabletitle);
-Table.set("Red Otsu Threshold", 0, "Top "+red+"% of pixels");
-Table.set("Value Subtracted From Blue", 0, "N/A", tabletitle);
-Table.set("Blue Otsu Threshold", 0, "Top "+blue+"% of pixels");
-Table.set("Value Subtracted From Green", 0, "N/A", tabletitle);
-Table.set("Green Otsu Threshold", 0, "Top "+green+"% of pixels");
+Table.set("Value Subtracted From red", 0, "N/A", tabletitle);
+Table.set("red Otsu Threshold", 0, "Top "+red+"% of pixels");
+Table.set("Value Subtracted From blue", 0, "N/A", tabletitle);
+Table.set("blue Otsu Threshold", 0, "Top "+blue+"% of pixels");
+Table.set("Value Subtracted From green", 0, "N/A", tabletitle);
+Table.set("green Otsu Threshold", 0, "Top "+green+"% of pixels");
 row = 1;
 for (i=0; i<files.length; i++) {
 	if (endsWith(files[i], ".czi") || endsWith(files[i], ".tif")) {
 		imagenoext = File.getNameWithoutExtension(path+files[i]);
 		result = Processor(path+files[i], path, files[i], imagenoext, red, blue, green);
 		Table.set("Image Name", row, imagenoext, tabletitle);
-		Table.set("Value Subtracted From Red", row, result[0], tabletitle);
-		Table.set("Red Otsu Threshold", row, result[1], tabletitle);
-		Table.set("Value Subtracted From Blue", row, result[2], tabletitle);
-		Table.set("Blue Otsu Threshold", row, result[3], tabletitle);
-		Table.set("Value Subtracted From Green", row, result[4], tabletitle);
-		Table.set("Green Otsu Threshold", row, result[5], tabletitle);
+		Table.set("Value Subtracted From " + result[0], row, result[1], tabletitle);
+		Table.set(result[0] + " Otsu Threshold", row, result[2], tabletitle);
+		Table.set("Value Subtracted From " + result[3], row, result[4], tabletitle);
+		Table.set(result[3] + " Otsu Threshold", row, result[5], tabletitle);
+		Table.set("Value Subtracted From " + result[6], row, result[7], tabletitle);
+		Table.set(result[6] + " Otsu Threshold", row, result[8], tabletitle);
 		row = row + 1;
 	}
 }
@@ -158,7 +158,7 @@ setAutoThreshold("Otsu dark stack");
 getThreshold(lower, upper);
 
 //Save values in results array
-myarray = newArray(background, lower);
+myarray = newArray(channels[k], background, lower);
 result = Array.concat(result,myarray);
 
 close("*");
